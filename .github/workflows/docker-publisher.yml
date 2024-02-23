@@ -22,5 +22,5 @@ jobs:
             # Build the image with branch name as tag
           - name: 'Build processor Image'
             run: |
-              docker build . --tag ghcr.io/fastmri-prostate-reconstruction/data-processsor:${{ github.ref_name }}
+              docker build . --tag ghcr.io/fastmri-prostate-reconstruction/data-processor:${{ github.ref_name }}
               docker push ghcr.io/fastmri-prostate-reconstruction/data-processor:${{ github.ref_name }}
