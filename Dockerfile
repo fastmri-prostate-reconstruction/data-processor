@@ -1,4 +1,4 @@
-FROM python:3.11.7
+FROM pytorch/pytorch:latest
 COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
