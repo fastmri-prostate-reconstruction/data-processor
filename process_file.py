@@ -145,16 +145,16 @@ def process_file(file_path, split_name=None):
         kspace_sum_masked_slice = kspace_sum_masked[slice_idx]
 
         if args.output_numpy:
-            np.save(f"{split_name}_grappa_reconstruction/{file_id}.{slice_idx}.npy", reconstruction_slice)
-            np.save(f"{split_name}_sum_reconstruction/{file_id}.{slice_idx}.npy", kspace_sum_reconstruction_slice)
-            np.save(f"{split_name}_mask/{file_id}.{slice_idx}.npy", mask_slice)
-            np.save(f"{split_name}_masked_sum_reconstruction/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
+            np.save(f"{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
+            np.save(f"{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_reconstruction_slice)
+            np.save(f"{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
+            np.save(f"{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
 
         if args.output_png:
-            matplotlib.image.imsave(f"{split_name}_grappa_reconstruction/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
-            matplotlib.image.imsave(f"{split_name}_sum_reconstruction/{file_id}.{slice_idx}.png", kspace_sum_reconstruction_slice, cmap="gray")
-            matplotlib.image.imsave(f"{split_name}_mask/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
-            matplotlib.image.imsave(f"{split_name}_masked_sum_reconstruction/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
+            matplotlib.image.imsave(f"{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
+            matplotlib.image.imsave(f"{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_reconstruction_slice, cmap="gray")
+            matplotlib.image.imsave(f"{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
+            matplotlib.image.imsave(f"{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
         
     print("finished saving calculations")
 

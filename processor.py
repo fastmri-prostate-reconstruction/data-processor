@@ -19,11 +19,14 @@ import torch
 # Initialize parser
 parser = argparse.ArgumentParser()
 
-parser.add_argument("token", type=str)
+parser.add_argument("--token", type=str)
+parser.add_argument("--dataset_name", type=str)
 
 args = parser.parse_args()
 
+print("Started processing")
 print("Logging in to HF Hub, first 5 characters of token: ", args.token[:5])
+print("Dataset name: ", args.dataset_name)
 
 hfh.login(args.token)
 

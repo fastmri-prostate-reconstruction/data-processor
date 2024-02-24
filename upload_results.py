@@ -6,22 +6,30 @@ import os
 # Initialize parser
 parser = argparse.ArgumentParser()
 
-parser.add_argument("token", type=str)
-parser.add_argument("dataset_name", type=str)
+parser.add_argument("--token", type=str)
+parser.add_argument("--dataset_name", type=str)
 
 args = parser.parse_args()
 
+print("Uploading results to HF Hub")
 print("Logging in to HF Hub, first 5 characters of token: ", args.token[:5])
+print("Dataset name: ", args.dataset_name)
 
 hfh.login(args.token)
 
 folders = []
 for split_name in ["train", "valid", "test"]:
-    folders.append(f"{split_name}_grappa_reconstruction")
-    folders.append(f"{split_name}_sum_reconstruction")
-    folders.append(f"{split_name}_mask")
-    folders.append(f"{split_name}_masked_grappa_reconstruction")
-    folders.append(f"{split_name}_masked_sum_reconstruction")
+    folders.append(f"{split_name}_grappa_reconstruction_numpy")
+    folders.append(f"{split_name}_sum_reconstruction_numpy")
+    folders.append(f"{split_name}_mask_numpy")
+    folders.append(f"{split_name}_masked_grappa_reconstruction_numpy")
+    folders.append(f"{split_name}_masked_sum_reconstruction_numpy")
+
+    folders.append(f"{split_name}_grappa_reconstruction_png")
+    folders.append(f"{split_name}_sum_reconstruction_png")
+    folders.append(f"{split_name}_mask_png")
+    folders.append(f"{split_name}_masked_grappa_reconstruction_png")
+    folders.append(f"{split_name}_masked_sum_reconstruction_png")
 
 
 # filter out non-existing folders
