@@ -16,6 +16,7 @@ import matplotlib.image
 from fastmri.data import transforms as T
 import torch
 
+
 # Initialize parser
 parser = argparse.ArgumentParser()
 
@@ -115,18 +116,14 @@ def cartesian_mask(shape, acc, sample_n=10, centered=False):
 
 for split_name, split in zip(["train", "valid", "test"], [train_files, valid_files, test_files]):
     print(f"Started {split_name} split")
+    print("Current folders")
+    # for output_format in ["numpy", "png"]:
+    #     os.makedirs(f"{split_name}_grappa_reconstruction_{output_format}", exist_ok=True)
+    #     os.makedirs(f"{split_name}_sum_reconstruction_{output_format}", exist_ok=True)
+    #     os.makedirs(f"{split_name}_mask_{output_format}", exist_ok=True)
+    #     # os.makedirs(f"{split_name}_masked_grappa_reconstruction_{output_format}", exist_ok=True)
+    #     os.makedirs(f"{split_name}_masked_sum_reconstruction_{output_format}", exist_ok=True)
     
-    grappa_reconstruction_folder = f"{split_name}_grappa_reconstruction"
-    sum_reconstruction_folder = f"{split_name}_sum_reconstruction"
-    mask_folder = f"{split_name}_mask"
-#     masked_grappa_reconstruction_folder = f"{split_name}_masked_grappa_reconstruction"
-    masked_sum_reconstruction_folder = f"{split_name}_masked_sum_reconstruction"
-    
-    os.makedirs(grappa_reconstruction_folder, exist_ok=True)
-    os.makedirs(sum_reconstruction_folder, exist_ok=True)
-    os.makedirs(mask_folder, exist_ok=True)
-#     os.makedirs(masked_grappa_reconstruction_folder, exist_ok=True)
-    os.makedirs(masked_sum_reconstruction_folder, exist_ok=True)
 
     for filename in split:
         print(f"Started image {filename}")
@@ -138,12 +135,17 @@ for split_name, split in zip(["train", "valid", "test"], [train_files, valid_fil
             cache_dir="hf_cache",
         )
 
-        # !python process_file.py {file_path} {split_name}
+        print("Processing", file_path)
+        # subprocess.run([
+        #     "python", "process_file.py", file_path, split_name
+        # ])
+        # i also want to see the print output of the process_file.py on the stdout
+
         subprocess.run([
             "python", "process_file.py", file_path, split_name
-        ])
+        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         
         shutil.rmtree('hf_cache')
         gc.collect()
-
+        # break
