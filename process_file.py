@@ -163,7 +163,7 @@ def process_file(file_path, split_name=None):
         #     matplotlib.image.imsave(f"{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_reconstruction_slice, cmap="gray")
         #     matplotlib.image.imsave(f"{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
         #     matplotlib.image.imsave(f"{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
-        # break
+        break
     print("finished saving calculations")
 
 
