@@ -17,6 +17,10 @@ import matplotlib.image
 from fastmri.data import transforms as T
 import torch
 
+
+import upload_results
+import process_file
+
 # from process_file import process_file
 
 # Initialize parser
@@ -115,6 +119,7 @@ def cartesian_mask(shape, acc, sample_n=10, centered=False):
 
     return mask
 
+folders = upload_results.create_folders("/app")
 
 for split_name, split in zip(["train", "valid", "test"], [train_files, valid_files, test_files]):
     print(f"Started {split_name} split")
@@ -138,28 +143,33 @@ for split_name, split in zip(["train", "valid", "test"], [train_files, valid_fil
         )
 
         print("Processing", file_path)
-        # subprocess.run([
+        # # subprocess.run([
+        # #     "python", "/app/process_file.py", file_path, split_name
+        # # ], check=True, stdout=sys.stdout, stderr=sys.stderr)
+
+        # proc = subprocess.Popen([
         #     "python", "/app/process_file.py", file_path, split_name
-        # ], check=True, stdout=sys.stdout, stderr=sys.stderr)
+        # ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        # proc.wait()
+        # print("Standard output:")
+        # print(proc.stdout.read().decode('utf-8'))
+        # print("Standard error:")
+        # print(proc.stderr.read().decode('utf-8'))
+        # print('Return code:', proc.returncode)
 
-        proc = subprocess.Popen([
-            "python", "/app/process_file.py", file_path, split_name
-        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        proc.wait()
-        print("Standard output:")
-        print(proc.stdout.read().decode('utf-8'))
-        print("Standard error:")
-        print(proc.stderr.read().decode('utf-8'))
-        print('Return code:', proc.returncode)
-
-        print("Process finished")
-        # i also want to see the print output of the process_file.py on the stdout
+        # print("Process finished")
+        # # i also want to see the print output of the process_file.py on the stdout
         # process_file(file_path, split_name)
         # subprocess.Popen([
         #     "python", "/app/process_file.py", file_path, split_name
         # ], 
         # # os.system(f"python /app/process_file.py {file_path} {split_name}")
         
+        process_file.process_file(file_path, split_name, root_path="/app")
+
         shutil.rmtree('hf_cache')
         gc.collect()
         break
+
+upload_results.zip_folders(folders)
+upload_results.upload_folders(args.dataset_name, folders)
