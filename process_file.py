@@ -19,6 +19,13 @@ import torch
  
 
 os.makedirs("/app/worksss", exist_ok=True)
+from pathlib import Path
+
+home_path = str(Path.home())
+print(home_path)
+
+os.makedirs(f"{home_path}/data", exist_ok=True)
+data_dir = f"{home_path}/data"
 
 # if not (args.output_numpy or args.output_png):
 #     raise ValueError("At least one of output_numpy or output_png must be True")
@@ -136,28 +143,29 @@ def process_file(file_path, split_name=None):
         kspace_sum_reconstruction_slice = kspace_sum[slice_idx]
         mask_slice = kspace_mask[0, slice_idx, 0]
         kspace_sum_masked_slice = kspace_sum_masked[slice_idx]
+        print("A numpy path:", f"{home_path}/data/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy")
+        np.save(f"{home_path}/data/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
+        np.save(f"{home_path}/data/{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_reconstruction_slice)
+        np.save(f"{home_path}/data/{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
+        np.save(f"{home_path}/data/{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
 
-        np.save(f"/app/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
-        np.save(f"/app/{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_reconstruction_slice)
-        np.save(f"/app/{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
-        np.save(f"/app/{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
-
-        matplotlib.image.imsave(f"/app/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
-        matplotlib.image.imsave(f"/app/{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_reconstruction_slice, cmap="gray")
-        matplotlib.image.imsave(f"/app/{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
-        matplotlib.image.imsave(f"/app/{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
+        print("A png path:", f"{home_path}/data/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png")
+        matplotlib.image.imsave(f"{home_path}/data/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
+        matplotlib.image.imsave(f"{home_path}/data/{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_reconstruction_slice, cmap="gray")
+        matplotlib.image.imsave(f"{home_path}/data/{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
+        matplotlib.image.imsave(f"{home_path}/data/{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
 
         # if args.output_numpy:
-        #     np.save(f"/app/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
-        #     np.save(f"/app/{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_reconstruction_slice)
-        #     np.save(f"/app/{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
-        #     np.save(f"/app/{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
+        #     np.save(f"{home_path}/data/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
+        #     np.save(f"{home_path}/data/{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_reconstruction_slice)
+        #     np.save(f"{home_path}/data/{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
+        #     np.save(f"{home_path}/data/{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
 
         # if args.output_png:
-        #     matplotlib.image.imsave(f"/app/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
-        #     matplotlib.image.imsave(f"/app/{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_reconstruction_slice, cmap="gray")
-        #     matplotlib.image.imsave(f"/app/{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
-        #     matplotlib.image.imsave(f"/app/{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
+        #     matplotlib.image.imsave(f"{home_path}/data/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
+        #     matplotlib.image.imsave(f"{home_path}/data/{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_reconstruction_slice, cmap="gray")
+        #     matplotlib.image.imsave(f"{home_path}/data/{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
+        #     matplotlib.image.imsave(f"{home_path}/data/{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
         break
     print("finished saving calculations")
 
@@ -170,5 +178,13 @@ if __name__ == "__main__":
     parser.add_argument("split_name")
 
     args = parser.parse_args()
+
+    for output_format in ["numpy", "png"]:
+        os.makedirs(f"{home_path}/data/{args.split_name}_grappa_reconstruction_{output_format}", exist_ok=True)
+        os.makedirs(f"{home_path}/data/{args.split_name}_sum_reconstruction_{output_format}", exist_ok=True)
+        os.makedirs(f"{home_path}/data/{args.split_name}_mask_{output_format}", exist_ok=True)
+        # os.makedirs(f"{home_path}/data/{args.split_name}_masked_grappa_reconstruction_{output_format}", exist_ok=True)
+        os.makedirs(f"{home_path}/data/{args.split_name}_masked_sum_reconstruction_{output_format}", exist_ok=True)
+    
 
     process_file(args.kspace_path, args.split_name)

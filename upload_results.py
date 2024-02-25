@@ -2,7 +2,9 @@ import argparse
 import subprocess
 import huggingface_hub as hfh
 import os
+from pathlib import path
 
+home_path = str(Path.home())
 # Initialize parser
 parser = argparse.ArgumentParser()
 
@@ -19,17 +21,17 @@ hfh.login(args.token)
 
 folders = []
 for split_name in ["train", "valid", "test"]:
-    folders.append(f"/app/{split_name}_grappa_reconstruction_numpy")
-    folders.append(f"/app/{split_name}_sum_reconstruction_numpy")
-    folders.append(f"/app/{split_name}_mask_numpy")
-    folders.append(f"/app/{split_name}_masked_grappa_reconstruction_numpy")
-    folders.append(f"/app/{split_name}_masked_sum_reconstruction_numpy")
+    folders.append(f"{home_path}/data/{split_name}_grappa_reconstruction_numpy")
+    folders.append(f"{home_path}/data/{split_name}_sum_reconstruction_numpy")
+    folders.append(f"{home_path}/data/{split_name}_mask_numpy")
+    folders.append(f"{home_path}/data/{split_name}_masked_grappa_reconstruction_numpy")
+    folders.append(f"{home_path}/data/{split_name}_masked_sum_reconstruction_numpy")
 
-    folders.append(f"/app/{split_name}_grappa_reconstruction_png")
-    folders.append(f"/app/{split_name}_sum_reconstruction_png")
-    folders.append(f"/app/{split_name}_mask_png")
-    folders.append(f"/app/{split_name}_masked_grappa_reconstruction_png")
-    folders.append(f"/app/{split_name}_masked_sum_reconstruction_png")
+    folders.append(f"{home_path}/data/{split_name}_grappa_reconstruction_png")
+    folders.append(f"{home_path}/data/{split_name}_sum_reconstruction_png")
+    folders.append(f"{home_path}/data/{split_name}_mask_png")
+    folders.append(f"{home_path}/data/{split_name}_masked_grappa_reconstruction_png")
+    folders.append(f"{home_path}/data/{split_name}_masked_sum_reconstruction_png")
 
 
 # filter out non-existing folders
