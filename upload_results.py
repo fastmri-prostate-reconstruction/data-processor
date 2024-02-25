@@ -2,7 +2,7 @@ import argparse
 import subprocess
 import huggingface_hub as hfh
 import os
-from pathlib import path
+from pathlib import Path
 
 home_path = str(Path.home())
 # Initialize parser
