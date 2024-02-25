@@ -17,14 +17,8 @@ from fastmri.data import transforms as T
 # from fastmri_prostate.reconstruction.utils import center_crop_im
 import torch
  
-# Initialize parser
-parser = argparse.ArgumentParser()
-parser.add_argument("kspace_path")
-parser.add_argument("split_name")
-# parser.add_argument("output_numpy", default=False, type=bool)
-# parser.add_argument("output_png", default=False, type=bool)
 
-args = parser.parse_args()
+os.makedirs("worksss", exist_ok=True)
 
 # if not (args.output_numpy or args.output_png):
 #     raise ValueError("At least one of output_numpy or output_png must be True")
@@ -99,6 +93,7 @@ def cartesian_mask(shape, acc, sample_n=10, centered=False):
     return mask
 
 def process_file(file_path, split_name=None):
+    print("started processing file")
     file_id = file_path.split("_")[-1].replace(".h5", "")
     file = h5py.File(file_path)
     
@@ -168,4 +163,12 @@ def process_file(file_path, split_name=None):
 
 
 if __name__ == "__main__":
+
+    # Initialize parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument("kspace_path")
+    parser.add_argument("split_name")
+
+    args = parser.parse_args()
+
     process_file(args.kspace_path, args.split_name)
