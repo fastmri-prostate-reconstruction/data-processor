@@ -145,6 +145,7 @@ for split_name, split in zip(["train", "valid", "test"], [train_files, valid_fil
         proc = subprocess.Popen([
             "python", "/app/process_file.py", file_path, split_name
         ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        proc.wait()
         print("Standard output:")
         print(proc.stdout.read().decode('utf-8'))
         print("Standard error:")
