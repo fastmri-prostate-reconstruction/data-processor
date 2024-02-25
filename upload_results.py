@@ -19,17 +19,17 @@ hfh.login(args.token)
 
 folders = []
 for split_name in ["train", "valid", "test"]:
-    folders.append(f"{split_name}_grappa_reconstruction_numpy")
-    folders.append(f"{split_name}_sum_reconstruction_numpy")
-    folders.append(f"{split_name}_mask_numpy")
-    folders.append(f"{split_name}_masked_grappa_reconstruction_numpy")
-    folders.append(f"{split_name}_masked_sum_reconstruction_numpy")
+    folders.append(f"/app/{split_name}_grappa_reconstruction_numpy")
+    folders.append(f"/app/{split_name}_sum_reconstruction_numpy")
+    folders.append(f"/app/{split_name}_mask_numpy")
+    folders.append(f"/app/{split_name}_masked_grappa_reconstruction_numpy")
+    folders.append(f"/app/{split_name}_masked_sum_reconstruction_numpy")
 
-    folders.append(f"{split_name}_grappa_reconstruction_png")
-    folders.append(f"{split_name}_sum_reconstruction_png")
-    folders.append(f"{split_name}_mask_png")
-    folders.append(f"{split_name}_masked_grappa_reconstruction_png")
-    folders.append(f"{split_name}_masked_sum_reconstruction_png")
+    folders.append(f"/app/{split_name}_grappa_reconstruction_png")
+    folders.append(f"/app/{split_name}_sum_reconstruction_png")
+    folders.append(f"/app/{split_name}_mask_png")
+    folders.append(f"/app/{split_name}_masked_grappa_reconstruction_png")
+    folders.append(f"/app/{split_name}_masked_sum_reconstruction_png")
 
 
 # filter out non-existing folders

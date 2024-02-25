@@ -120,11 +120,11 @@ for split_name, split in zip(["train", "valid", "test"], [train_files, valid_fil
     print(f"Started {split_name} split")
     print("Current folders")
     for output_format in ["numpy", "png"]:
-        os.makedirs(f"{split_name}_grappa_reconstruction_{output_format}", exist_ok=True)
-        os.makedirs(f"{split_name}_sum_reconstruction_{output_format}", exist_ok=True)
-        os.makedirs(f"{split_name}_mask_{output_format}", exist_ok=True)
-        # os.makedirs(f"{split_name}_masked_grappa_reconstruction_{output_format}", exist_ok=True)
-        os.makedirs(f"{split_name}_masked_sum_reconstruction_{output_format}", exist_ok=True)
+        os.makedirs(f"/app/{split_name}_grappa_reconstruction_{output_format}", exist_ok=True)
+        os.makedirs(f"/app/{split_name}_sum_reconstruction_{output_format}", exist_ok=True)
+        os.makedirs(f"/app/{split_name}_mask_{output_format}", exist_ok=True)
+        # os.makedirs(f"/app/{split_name}_masked_grappa_reconstruction_{output_format}", exist_ok=True)
+        os.makedirs(f"/app/{split_name}_masked_sum_reconstruction_{output_format}", exist_ok=True)
     
 
     for filename in split:
@@ -139,14 +139,14 @@ for split_name, split in zip(["train", "valid", "test"], [train_files, valid_fil
 
         print("Processing", file_path)
         subprocess.run([
-            "python", "process_file.py", file_path, split_name
+            "python", "/app/process_file.py", file_path, split_name
         ], check=True, stdout=sys.stdout, stderr=sys.stderr)
         # i also want to see the print output of the process_file.py on the stdout
         # process_file(file_path, split_name)
         # subprocess.Popen([
-        #     "python", "process_file.py", file_path, split_name
+        #     "python", "/app/process_file.py", file_path, split_name
         # ], 
-        # # os.system(f"python process_file.py {file_path} {split_name}")
+        # # os.system(f"python /app/process_file.py {file_path} {split_name}")
         
         shutil.rmtree('hf_cache')
         gc.collect()
