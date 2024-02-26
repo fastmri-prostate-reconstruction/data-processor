@@ -7,7 +7,7 @@ from pathlib import Path
 
 def create_folders(root_path=None):
     folders = []
-    for split_name in ["train", "val", "test"]:
+    for split_name in ["train", "valid", "test"]:
         folders.extend([
             f"{root_path}/data/{split_name}_grappa_reconstruction_numpy",
             f"{root_path}/data/{split_name}_sum_reconstruction_numpy",
@@ -19,8 +19,7 @@ def create_folders(root_path=None):
             f"{root_path}/data/{split_name}_mask_png",
             f"{root_path}/data/{split_name}_masked_grappa_reconstruction_png",
             f"{root_path}/data/{split_name}_masked_sum_reconstruction_png",
-        ]
-        )
+        ])
     for folder in folders:
         print(f"Creating folder {folder}...")
         os.makedirs(folder, exist_ok=True)
