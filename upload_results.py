@@ -1,4 +1,3 @@
-import argparse
 import subprocess
 import huggingface_hub as hfh
 import os
@@ -33,7 +32,7 @@ def zip_folders(folders):
 def upload_folders(dataset_name, folders):
     # upload the zipped folders
     hfh.create_repo(
-        "fastmri-prostate-reconstruction/"+args.dataset_name,
+        "fastmri-prostate-reconstruction/"+dataset_name,
         repo_type="dataset",
         exist_ok=True,
         private=False,
