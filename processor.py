@@ -28,6 +28,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--token", type=str)
 parser.add_argument("--dataset_name", type=str)
+# boolean debug mode
+parser.add_argument("--debug", type=bool, default=False)
 
 args = parser.parse_args()
 
@@ -139,7 +141,8 @@ for split_name, split in zip(["train", "valid", "test"], [train_files, valid_fil
 
         shutil.rmtree('hf_cache')
         gc.collect()
-        #break
+        if args.debug:
+            break
 
 upload_results.zip_folders(folders)
 upload_results.upload_folders(args.dataset_name, folders)
