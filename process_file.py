@@ -13,21 +13,12 @@ import fastmri
 import matplotlib.pyplot as plt
 import matplotlib.image
 from fastmri.data import transforms as T
+from numpy.lib.stride_tricks import as_strided
 # from torchvision.transforms import CenterCrop
 # from fastmri_prostate.reconstruction.utils import center_crop_im
 import torch
  
-# Initialize parser
-parser = argparse.ArgumentParser()
-parser.add_argument("kspace_path")
-parser.add_argument("split_name")
-# parser.add_argument("output_numpy", default=False, type=bool)
-# parser.add_argument("output_png", default=False, type=bool)
-
-args = parser.parse_args()
-
-# if not (args.output_numpy or args.output_png):
-#     raise ValueError("At least one of output_numpy or output_png must be True")
+from pathlib import Path
 
 def normalize_image(image):
     return (image - image.min()) / (image.max() - image.min())
@@ -53,7 +44,6 @@ def center_crop_im(im_3d: np.ndarray, crop_to_size: tuple) -> np.ndarray:
 
     return im_3d[:, int(y_crop):int(crop_to_size[1] + y_crop), int(x_crop):int(crop_to_size[0] + x_crop)]  
 
-from numpy.lib.stride_tricks import as_strided
 
 def normal_pdf(length, sensitivity):
     return np.exp(-sensitivity * (np.arange(length) - length / 2)**2)
@@ -98,7 +88,8 @@ def cartesian_mask(shape, acc, sample_n=10, centered=False):
 
     return mask
 
-def process_file(file_path, split_name=None):
+def process_file(file_path, split_name=None, root_path="/app"):
+    print("started processing file")
     file_id = file_path.split("_")[-1].replace(".h5", "")
     file = h5py.File(file_path)
     
@@ -107,6 +98,16 @@ def process_file(file_path, split_name=None):
     grappa_reconstruction = file["reconstruction_rss"][:]
     
     num_slices = grappa_reconstruction.shape[0]
+
+    for slice_idx in range(num_slices):
+        reconstruction_slice = grappa_reconstruction[slice_idx]
+        print(f"Saving slice {slice_idx} to {root_path}/data/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy")
+        np.save(f"{root_path}/data/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
+        matplotlib.image.imsave(f"{root_path}/data/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
+
+    del grappa_reconstruction
+    del reconstruction_slice
+
     num_coils = kspace.shape[2] #  (averages, slices, coils, readout, phase)
     
     # save our reconstruction # compute
@@ -117,9 +118,16 @@ def process_file(file_path, split_name=None):
     kspace_sum = fastmri.rss(kspace_sum, dim=1)
     kspace_sum = torch.flip(kspace_sum, dims=[1])
     kspace_sum = center_crop_im(kspace_sum, crop_to_size=(320, 320))
+
+    for slice_idx in range(num_slices):
+        kspace_sum_slice = kspace_sum[slice_idx]
+        np.save(f"{root_path}/data/{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_slice)
+        matplotlib.image.imsave(f"{root_path}/data/{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_slice, cmap="gray")
+
+    del kspace_sum
+    del kspace_sum_slice
     
     kspace_mask = cartesian_mask([num_slices, kspace.shape[-2], kspace.shape[-1]], 4, centered=True)
-    
     kspace_mask = kspace_mask.reshape(1, num_slices, 1, kspace.shape[-2], kspace.shape[-1])
     kspace_mask = np.repeat(np.repeat(kspace_mask, 3, axis=0), num_coils, axis=2)    
 
@@ -137,35 +145,40 @@ def process_file(file_path, split_name=None):
     print("started saving calculations")
     for slice_idx in range(num_slices):
 
-        reconstruction_slice = grappa_reconstruction[slice_idx]
-        kspace_sum_reconstruction_slice = kspace_sum[slice_idx]
         mask_slice = kspace_mask[0, slice_idx, 0]
         kspace_sum_masked_slice = kspace_sum_masked[slice_idx]
+        np.save(f"{root_path}/data/{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
+        np.save(f"{root_path}/data/{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
 
-        np.save(f"{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
-        np.save(f"{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_reconstruction_slice)
-        np.save(f"{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
-        np.save(f"{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
+        matplotlib.image.imsave(f"{root_path}/data/{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
+        matplotlib.image.imsave(f"{root_path}/data/{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
 
-        matplotlib.image.imsave(f"{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
-        matplotlib.image.imsave(f"{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_reconstruction_slice, cmap="gray")
-        matplotlib.image.imsave(f"{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
-        matplotlib.image.imsave(f"{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
-
-        # if args.output_numpy:
-        #     np.save(f"{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
-        #     np.save(f"{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_reconstruction_slice)
-        #     np.save(f"{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
-        #     np.save(f"{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
-
-        # if args.output_png:
-        #     matplotlib.image.imsave(f"{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
-        #     matplotlib.image.imsave(f"{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_reconstruction_slice, cmap="gray")
-        #     matplotlib.image.imsave(f"{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
-        #     matplotlib.image.imsave(f"{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
-        # break
+    file.close()
+    del kspace
+    del kspace_mask
+    del kspace_masked
+    del kspace_sum_masked
+    del mask_slice
+    del kspace_sum_masked_slice
+    
     print("finished saving calculations")
 
 
 if __name__ == "__main__":
+
+    # Initialize parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument("kspace_path")
+    parser.add_argument("split_name")
+
+    args = parser.parse_args()
+
+    for output_format in ["numpy", "png"]:
+        os.makedirs(f"{root_path}/data/{args.split_name}_grappa_reconstruction_{output_format}", exist_ok=True)
+        os.makedirs(f"{root_path}/data/{args.split_name}_sum_reconstruction_{output_format}", exist_ok=True)
+        os.makedirs(f"{root_path}/data/{args.split_name}_mask_{output_format}", exist_ok=True)
+        # os.makedirs(f"{root_path}/data/{args.split_name}_masked_grappa_reconstruction_{output_format}", exist_ok=True)
+        os.makedirs(f"{root_path}/data/{args.split_name}_masked_sum_reconstruction_{output_format}", exist_ok=True)
+    
+
     process_file(args.kspace_path, args.split_name)

@@ -3,6 +3,7 @@ import subprocess
 import gc
 import shutil
 import argparse
+import sys
 
 import pandas as pd
 import numpy as np
@@ -16,6 +17,11 @@ import matplotlib.image
 from fastmri.data import transforms as T
 import torch
 
+
+import upload_results
+import process_file
+
+# from process_file import process_file
 
 # Initialize parser
 parser = argparse.ArgumentParser()
@@ -113,17 +119,10 @@ def cartesian_mask(shape, acc, sample_n=10, centered=False):
 
     return mask
 
+folders = upload_results.create_folders("/app")
 
 for split_name, split in zip(["train", "valid", "test"], [train_files, valid_files, test_files]):
-    print(f"Started {split_name} split")
-    print("Current folders")
-    # for output_format in ["numpy", "png"]:
-    #     os.makedirs(f"{split_name}_grappa_reconstruction_{output_format}", exist_ok=True)
-    #     os.makedirs(f"{split_name}_sum_reconstruction_{output_format}", exist_ok=True)
-    #     os.makedirs(f"{split_name}_mask_{output_format}", exist_ok=True)
-    #     # os.makedirs(f"{split_name}_masked_grappa_reconstruction_{output_format}", exist_ok=True)
-    #     os.makedirs(f"{split_name}_masked_sum_reconstruction_{output_format}", exist_ok=True)
-    
+    print(f"Started {split_name} split")    
 
     for filename in split:
         print(f"Started image {filename}")
@@ -135,17 +134,12 @@ for split_name, split in zip(["train", "valid", "test"], [train_files, valid_fil
             cache_dir="hf_cache",
         )
 
-        print("Processing", file_path)
-        # subprocess.run([
-        #     "python", "process_file.py", file_path, split_name
-        # ])
-        # i also want to see the print output of the process_file.py on the stdout
+        print("Processing", file_path)        
+        process_file.process_file(file_path, split_name, root_path="/app")
 
-        subprocess.run([
-            "python", "process_file.py", file_path, split_name
-        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
-        
         shutil.rmtree('hf_cache')
         gc.collect()
-        # break
+        #break
+
+upload_results.zip_folders(folders)
+upload_results.upload_folders(args.dataset_name, folders)
