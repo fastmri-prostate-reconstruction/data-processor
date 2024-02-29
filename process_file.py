@@ -49,7 +49,7 @@ def normal_pdf(length, sensitivity):
     return np.exp(-sensitivity * (np.arange(length) - length / 2)**2)
 
 
-def cartesian_mask(shape, acc, sample_n=10, centered=False):
+def cartesian_mask(shape, acc=4, sample_n=10, centered=False):
     """
     Sampling density estimated from implementation of kt FOCUSS
 
@@ -88,7 +88,7 @@ def cartesian_mask(shape, acc, sample_n=10, centered=False):
 
     return mask
 
-def process_file(file_path, split_name=None, root_path="/app"):
+def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_centered=True, cartesian_mask_acc=4, cartesian_mask_sample_n=10):
     print("started processing file")
     file_id = file_path.split("_")[-1].replace(".h5", "")
     file = h5py.File(file_path)
@@ -101,9 +101,9 @@ def process_file(file_path, split_name=None, root_path="/app"):
 
     for slice_idx in range(num_slices):
         reconstruction_slice = grappa_reconstruction[slice_idx]
-        print(f"Saving slice {slice_idx} to {root_path}/data/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy")
-        np.save(f"{root_path}/data/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
-        matplotlib.image.imsave(f"{root_path}/data/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
+        print(f"Saving slice {slice_idx} to {root_path}/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy")
+        np.save(f"{root_path}/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
+        matplotlib.image.imsave(f"{root_path}/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
 
     del grappa_reconstruction
     del reconstruction_slice
@@ -121,13 +121,18 @@ def process_file(file_path, split_name=None, root_path="/app"):
 
     for slice_idx in range(num_slices):
         kspace_sum_slice = kspace_sum[slice_idx]
-        np.save(f"{root_path}/data/{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_slice)
-        matplotlib.image.imsave(f"{root_path}/data/{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_slice, cmap="gray")
+        np.save(f"{root_path}/{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_slice)
+        matplotlib.image.imsave(f"{root_path}/{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_slice, cmap="gray")
 
     del kspace_sum
     del kspace_sum_slice
     
-    kspace_mask = cartesian_mask([num_slices, kspace.shape[-2], kspace.shape[-1]], 4, centered=True)
+    kspace_mask = cartesian_mask(
+        [num_slices, kspace.shape[-2], kspace.shape[-1]],
+        acc=cartesian_mask_acc,
+        sample_n=cartesian_mask_sample_n,
+        centered=cartesian_mask_centered
+    )
     kspace_mask = kspace_mask.reshape(1, num_slices, 1, kspace.shape[-2], kspace.shape[-1])
     kspace_mask = np.repeat(np.repeat(kspace_mask, 3, axis=0), num_coils, axis=2)    
 
@@ -147,11 +152,11 @@ def process_file(file_path, split_name=None, root_path="/app"):
 
         mask_slice = kspace_mask[0, slice_idx, 0]
         kspace_sum_masked_slice = kspace_sum_masked[slice_idx]
-        np.save(f"{root_path}/data/{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
-        np.save(f"{root_path}/data/{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
+        np.save(f"{root_path}/{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
+        np.save(f"{root_path}/{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
 
-        matplotlib.image.imsave(f"{root_path}/data/{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
-        matplotlib.image.imsave(f"{root_path}/data/{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
+        matplotlib.image.imsave(f"{root_path}/{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
+        matplotlib.image.imsave(f"{root_path}/{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
 
     file.close()
     del kspace
@@ -164,21 +169,21 @@ def process_file(file_path, split_name=None, root_path="/app"):
     print("finished saving calculations")
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # Initialize parser
-    parser = argparse.ArgumentParser()
-    parser.add_argument("kspace_path")
-    parser.add_argument("split_name")
+#     # Initialize parser
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("kspace_path")
+#     parser.add_argument("split_name")
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    for output_format in ["numpy", "png"]:
-        os.makedirs(f"{root_path}/data/{args.split_name}_grappa_reconstruction_{output_format}", exist_ok=True)
-        os.makedirs(f"{root_path}/data/{args.split_name}_sum_reconstruction_{output_format}", exist_ok=True)
-        os.makedirs(f"{root_path}/data/{args.split_name}_mask_{output_format}", exist_ok=True)
-        # os.makedirs(f"{root_path}/data/{args.split_name}_masked_grappa_reconstruction_{output_format}", exist_ok=True)
-        os.makedirs(f"{root_path}/data/{args.split_name}_masked_sum_reconstruction_{output_format}", exist_ok=True)
+#     for output_format in ["numpy", "png"]:
+#         os.makedirs(f"{root_path}/{args.split_name}_grappa_reconstruction_{output_format}", exist_ok=True)
+#         os.makedirs(f"{root_path}/{args.split_name}_sum_reconstruction_{output_format}", exist_ok=True)
+#         os.makedirs(f"{root_path}/{args.split_name}_mask_{output_format}", exist_ok=True)
+#         # os.makedirs(f"{root_path}/{args.split_name}_masked_grappa_reconstruction_{output_format}", exist_ok=True)
+#         os.makedirs(f"{root_path}/{args.split_name}_masked_sum_reconstruction_{output_format}", exist_ok=True)
     
 
-    process_file(args.kspace_path, args.split_name)
+#     process_file(args.kspace_path, args.split_name)

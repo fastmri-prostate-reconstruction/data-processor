@@ -4,6 +4,7 @@ import gc
 import shutil
 import argparse
 import sys
+import json
 
 import pandas as pd
 import numpy as np
@@ -17,28 +18,32 @@ import matplotlib.image
 from fastmri.data import transforms as T
 import torch
 
-
 import upload_results
 import process_file
-
-# from process_file import process_file
 
 # Initialize parser
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--token", type=str)
 parser.add_argument("--dataset_name", type=str)
-# boolean debug mode
-parser.add_argument("--debug", type=bool, default=False)
+parser.add_argument("--cartesian_mask_acc", type=int, default=4,)
+parser.add_argument("--cartesian_mask_sample_n", type=int, default=10,)
+parser.add_argument("-c", "--cartesian_mask_centered", action="store_true")
+parser.add_argument("-d", "--debug", action="store_true")
 
 args = parser.parse_args()
 
-print("Started processing")
 print("Logging in to HF Hub, first 5 characters of token: ", args.token[:5])
 print("Dataset name: ", args.dataset_name)
 
 hfh.login(args.token)
 
+print("Cartesian mask acc: ", args.cartesian_mask_acc)
+print("Cartesian mask sample_n: ", args.cartesian_mask_sample_n)
+print("Cartesian mask centered: ", args.cartesian_mask_centered)
+
+if args.debug:
+    print("Debug mode is on")
 
 all_files = list(hfh.list_files_info(
     repo_id="osbm/fastmri-prostate",
@@ -46,11 +51,11 @@ all_files = list(hfh.list_files_info(
 ))
 all_files = [file.path for file in all_files]
 
-
 train_files = [file for file in all_files if "training_T2" in file]
 valid_files = [file for file in all_files if "validation_T2" in file]
 test_files = [file for file in all_files if "test_T2" in file]
 
+root_path = "/app"
 
 def normalize_image(image):
     return (image - image.min()) / (image.max() - image.min())
@@ -121,7 +126,7 @@ def cartesian_mask(shape, acc, sample_n=10, centered=False):
 
     return mask
 
-folders = upload_results.create_folders("/app")
+folders = upload_results.create_folders(root_path)
 
 for split_name, split in zip(["train", "valid", "test"], [train_files, valid_files, test_files]):
     print(f"Started {split_name} split")    
@@ -137,12 +142,63 @@ for split_name, split in zip(["train", "valid", "test"], [train_files, valid_fil
         )
 
         print("Processing", file_path)        
-        process_file.process_file(file_path, split_name, root_path="/app")
+        process_file.process_file(
+            file_path,
+            split_name,
+            root_path=root_path,
+            cartesian_mask_acc=args.cartesian_mask_acc,
+            cartesian_mask_sample_n=args.cartesian_mask_sample_n,
+            cartesian_mask_centered=args.cartesian_mask_centered
+        )
 
         shutil.rmtree('hf_cache')
         gc.collect()
         if args.debug:
             break
 
-upload_results.zip_folders(folders)
-upload_results.upload_folders(args.dataset_name, folders)
+upload_results.zip_folders(root_path, folders)
+upload_results.upload_folders(args.dataset_name, folders, root_path)
+
+
+images = [
+    f"{root_path}/train_grappa_reconstruction_png/0001.15.png",
+    f"{root_path}/train_grappa_reconstruction_png/0001.15.png",
+    f"{root_path}/train_sum_reconstruction_png/0001.15.png",
+    f"{root_path}/train_mask_png/0001.15.png",
+    f"{root_path}/train_masked_grappa_reconstruction_png/0001.15.png",
+    f"{root_path}/train_masked_sum_reconstruction_png/0001.15.png",
+]
+
+
+for image in images:
+    if not os.path.exists(image):
+        continue
+
+    api = hfh.HfApi()
+    api.upload_file(
+        repo_id="fastmri-prostate-reconstruction/"+args.dataset_name,
+        repo_type="dataset",
+        path_or_fileobj=image,
+        path_in_repo="example_image/" + image.split("/")[-1],
+    )
+
+print("Finished uploading example images")
+
+config = {
+    "cartesian_mask_acc": args.cartesian_mask_acc,
+    "cartesian_mask_sample_n": args.cartesian_mask_sample_n,
+    "cartesian_mask_centered": args.cartesian_mask_centered,
+    "debug": args.debug,
+}
+
+with open(f"{root_path}/config.json", "w") as f:
+    json.dump(config, f)
+
+api.upload_file(
+    repo_id="fastmri-prostate-reconstruction/"+args.dataset_name,
+    repo_type="dataset",
+    path_or_fileobj=f"{root_path}/config.json",
+    path_in_repo="config.json",
+)
+
+print("Finished uploading config file")
