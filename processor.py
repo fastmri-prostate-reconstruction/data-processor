@@ -161,16 +161,16 @@ upload_results.upload_folders(args.dataset_name, folders, root_path)
 
 
 images = [
-    f"{root_path}/train_grappa_reconstruction_png/0001.15.png",
-    f"{root_path}/train_grappa_reconstruction_png/0001.15.png",
-    f"{root_path}/train_sum_reconstruction_png/0001.15.png",
-    f"{root_path}/train_mask_png/0001.15.png",
-    f"{root_path}/train_masked_grappa_reconstruction_png/0001.15.png",
-    f"{root_path}/train_masked_sum_reconstruction_png/0001.15.png",
+    (f"{root_path}/train_grappa_reconstruction_png/0001.15.png", "grappa_reconstruction"),
+    # f"{root_path}/train_grappa_reconstruction_png/0001.15.png",
+    (f"{root_path}/train_sum_reconstruction_png/0001.15.png", "sum_reconstruction"),
+    (f"{root_path}/train_mask_png/0001.15.png", "mask"),
+    (f"{root_path}/train_masked_grappa_reconstruction_png/0001.15.png", "masked_grappa_reconstruction"),
+    (f"{root_path}/train_masked_sum_reconstruction_png/0001.15.png", "masked_sum_reconstruction"),
 ]
 
 
-for image in images:
+for image, image_type in images:
     if not os.path.exists(image):
         continue
 
@@ -179,7 +179,7 @@ for image in images:
         repo_id="fastmri-prostate-reconstruction/"+args.dataset_name,
         repo_type="dataset",
         path_or_fileobj=image,
-        path_in_repo="example_image/" + image.split("/")[-1],
+        path_in_repo="example_image/" + image_type+"_" + image.split("/")[-1],
     )
 
 print("Finished uploading example images")
