@@ -167,23 +167,3 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
     del kspace_sum_masked_slice
     
     print("finished saving calculations")
-
-
-# if __name__ == "__main__":
-
-#     # Initialize parser
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("kspace_path")
-#     parser.add_argument("split_name")
-
-#     args = parser.parse_args()
-
-#     for output_format in ["numpy", "png"]:
-#         os.makedirs(f"{root_path}/{args.split_name}_grappa_reconstruction_{output_format}", exist_ok=True)
-#         os.makedirs(f"{root_path}/{args.split_name}_sum_reconstruction_{output_format}", exist_ok=True)
-#         os.makedirs(f"{root_path}/{args.split_name}_mask_{output_format}", exist_ok=True)
-#         # os.makedirs(f"{root_path}/{args.split_name}_masked_grappa_reconstruction_{output_format}", exist_ok=True)
-#         os.makedirs(f"{root_path}/{args.split_name}_masked_sum_reconstruction_{output_format}", exist_ok=True)
-    
-
-#     process_file(args.kspace_path, args.split_name)

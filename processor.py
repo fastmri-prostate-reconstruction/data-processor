@@ -172,6 +172,7 @@ images = [
 
 for image, image_type in images:
     if not os.path.exists(image):
+        print(f"Example Image {image} does not exist, skipping")
         continue
 
     api = hfh.HfApi()

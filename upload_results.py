@@ -51,5 +51,5 @@ def upload_folders(dataset_name, folders, root_path):
             repo_id="fastmri-prostate-reconstruction/"+dataset_name,
             repo_type="dataset",
             path_or_fileobj=f"{folder}.zip",
-            path_in_repo=f"{folder}.zip",
+            path_in_repo=f"data/{folder.split('/')[-1]}.zip",
         )
