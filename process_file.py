@@ -142,10 +142,12 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
     kspace_mask = np.repeat(np.repeat(kspace_mask, 3, axis=0), num_coils, axis=2)    
 
     kspace_masked = kspace * kspace_mask
-
+    print("kspace_masked.dtype", kspace_masked.dtype)
+    kspace_masked = kspace_masked.astype(np.complex64)
+    print("kspace_masked.dtype", kspace_masked.dtype)
     # save our reconstruction # compute
     kspace_sum_masked = kspace_masked[0, :, :, :] + kspace_masked[1, :, :, :]
-
+    print("kspace_sum_masked.dtype", kspace_sum_masked.dtype)
     for slice_idx in range(num_slices):
         kspace_sum_masked_slice = kspace_sum_masked[slice_idx]
         np.save(f"{root_path}/{split_name}_kspace_masked_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
