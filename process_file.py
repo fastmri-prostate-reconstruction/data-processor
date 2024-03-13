@@ -112,6 +112,11 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
     
     # save our reconstruction # compute
     kspace_sum = kspace[0, :, :, :] + kspace[1, :, :, :]
+
+    for slice_idx in range(num_slices):
+        kspace_sum_slice = kspace_sum[slice_idx]
+        np.save(f"{root_path}/{split_name}_kspace_numpy/{file_id}.{slice_idx}.npy", kspace_sum_slice)
+
     kspace_sum = T.to_tensor(kspace_sum)
     kspace_sum = fastmri.ifft2c(kspace_sum)
     kspace_sum = fastmri.complex_abs(kspace_sum)
@@ -140,6 +145,11 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
 
     # save our reconstruction # compute
     kspace_sum_masked = kspace_masked[0, :, :, :] + kspace_masked[1, :, :, :]
+
+    for slice_idx in range(num_slices):
+        kspace_sum_masked_slice = kspace_sum_masked[slice_idx]
+        np.save(f"{root_path}/{split_name}_kspace_masked_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
+
     kspace_sum_masked = T.to_tensor(kspace_sum_masked)
     kspace_sum_masked = fastmri.ifft2c(kspace_sum_masked)
     kspace_sum_masked = fastmri.complex_abs(kspace_sum_masked)
