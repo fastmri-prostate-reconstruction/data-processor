@@ -14,6 +14,9 @@ def create_folders(root_path):
             f"{root_path}/{split_name}_mask_numpy",
             f"{root_path}/{split_name}_masked_grappa_reconstruction_numpy",
             f"{root_path}/{split_name}_masked_sum_reconstruction_numpy",
+
+            f"{root_path}/{split_name}_kspace_numpy",
+            f"{root_path}/{split_name}_kspace_masked_numpy",
             
             f"{root_path}/{split_name}_grappa_reconstruction_png",
             f"{root_path}/{split_name}_sum_reconstruction_png",
