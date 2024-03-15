@@ -114,6 +114,7 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
     kspace_sum = kspace[0, :, :, :] + kspace[1, :, :, :]
 
     for slice_idx in range(num_slices):
+        print("saving kspace in ",root_path, split_name )
         kspace_sum_slice = kspace_sum[slice_idx]
         np.save(f"{root_path}/{split_name}_kspace_numpy/{file_id}.{slice_idx}.npy", kspace_sum_slice)
 
