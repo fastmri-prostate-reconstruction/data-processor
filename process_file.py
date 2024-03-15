@@ -95,7 +95,7 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
     
     kspace = file["kspace"][:]
     
-    #grappa_reconstruction = file["reconstruction_rss"][:]
+    grappa_reconstruction = file["reconstruction_rss"][:]
     
     num_slices = grappa_reconstruction.shape[0]
 
