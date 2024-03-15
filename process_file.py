@@ -95,7 +95,7 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
     
     kspace = file["kspace"][:]
     
-    grappa_reconstruction = file["reconstruction_rss"][:]
+    #grappa_reconstruction = file["reconstruction_rss"][:]
     
     num_slices = grappa_reconstruction.shape[0]
 
@@ -105,8 +105,8 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
        # np.save(f"{root_path}/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
         #matplotlib.image.imsave(f"{root_path}/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
 
-    del grappa_reconstruction
-    del reconstruction_slice
+    #del grappa_reconstruction
+    #del reconstruction_slice
 
     num_coils = kspace.shape[2] #  (averages, slices, coils, readout, phase)
     
@@ -130,8 +130,8 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
         #np.save(f"{root_path}/{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_slice)
         #matplotlib.image.imsave(f"{root_path}/{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_slice, cmap="gray")
 
-    del kspace_sum
-    del kspace_sum_slice
+    #del kspace_sum
+    #del kspace_sum_slice
     
     kspace_mask = cartesian_mask(
         [num_slices, kspace.shape[-2], kspace.shape[-1]],
@@ -176,7 +176,7 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
     del kspace_mask
     del kspace_masked
     del kspace_sum_masked
-    del mask_slice
+    #del mask_slice
     del kspace_sum_masked_slice
     
     print("finished saving calculations")
