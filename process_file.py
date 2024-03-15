@@ -99,11 +99,11 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
     
     num_slices = grappa_reconstruction.shape[0]
 
-    for slice_idx in range(num_slices):
-        reconstruction_slice = grappa_reconstruction[slice_idx]
-        print(f"Saving slice {slice_idx} to {root_path}/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy")
-        np.save(f"{root_path}/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
-        matplotlib.image.imsave(f"{root_path}/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
+    #for slice_idx in range(num_slices):
+     #   reconstruction_slice = grappa_reconstruction[slice_idx]
+      #  print(f"Saving slice {slice_idx} to {root_path}/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy")
+       # np.save(f"{root_path}/{split_name}_grappa_reconstruction_numpy/{file_id}.{slice_idx}.npy", reconstruction_slice)
+        #matplotlib.image.imsave(f"{root_path}/{split_name}_grappa_reconstruction_png/{file_id}.{slice_idx}.png", reconstruction_slice, cmap="gray")
 
     del grappa_reconstruction
     del reconstruction_slice
@@ -117,17 +117,17 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
         kspace_sum_slice = kspace_sum[slice_idx]
         np.save(f"{root_path}/{split_name}_kspace_numpy/{file_id}.{slice_idx}.npy", kspace_sum_slice)
 
-    kspace_sum = T.to_tensor(kspace_sum)
-    kspace_sum = fastmri.ifft2c(kspace_sum)
-    kspace_sum = fastmri.complex_abs(kspace_sum)
-    kspace_sum = fastmri.rss(kspace_sum, dim=1)
-    kspace_sum = torch.flip(kspace_sum, dims=[1])
-    kspace_sum = center_crop_im(kspace_sum, crop_to_size=(320, 320))
+    #kspace_sum = T.to_tensor(kspace_sum)
+    #kspace_sum = fastmri.ifft2c(kspace_sum)
+    #kspace_sum = fastmri.complex_abs(kspace_sum)
+    #kspace_sum = fastmri.rss(kspace_sum, dim=1)
+    #kspace_sum = torch.flip(kspace_sum, dims=[1])
+    #kspace_sum = center_crop_im(kspace_sum, crop_to_size=(320, 320))
 
-    for slice_idx in range(num_slices):
-        kspace_sum_slice = kspace_sum[slice_idx]
-        np.save(f"{root_path}/{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_slice)
-        matplotlib.image.imsave(f"{root_path}/{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_slice, cmap="gray")
+    #for slice_idx in range(num_slices):
+        #kspace_sum_slice = kspace_sum[slice_idx]
+        #np.save(f"{root_path}/{split_name}_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_slice)
+        #matplotlib.image.imsave(f"{root_path}/{split_name}_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_slice, cmap="gray")
 
     del kspace_sum
     del kspace_sum_slice
@@ -152,23 +152,23 @@ def process_file(file_path, split_name=None, root_path="/app", cartesian_mask_ce
         kspace_sum_masked_slice = kspace_sum_masked[slice_idx]
         np.save(f"{root_path}/{split_name}_kspace_masked_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
 
-    kspace_sum_masked = T.to_tensor(kspace_sum_masked)
-    kspace_sum_masked = fastmri.ifft2c(kspace_sum_masked)
-    kspace_sum_masked = fastmri.complex_abs(kspace_sum_masked)
-    kspace_sum_masked = fastmri.rss(kspace_sum_masked, dim=1)
-    kspace_sum_masked = torch.flip(kspace_sum_masked, dims=[1])
-    kspace_sum_masked = center_crop_im(kspace_sum_masked, crop_to_size=(320, 320))
+    #kspace_sum_masked = T.to_tensor(kspace_sum_masked)
+    #kspace_sum_masked = fastmri.ifft2c(kspace_sum_masked)
+    #kspace_sum_masked = fastmri.complex_abs(kspace_sum_masked)
+    #kspace_sum_masked = fastmri.rss(kspace_sum_masked, dim=1)
+    #kspace_sum_masked = torch.flip(kspace_sum_masked, dims=[1])
+    #kspace_sum_masked = center_crop_im(kspace_sum_masked, crop_to_size=(320, 320))
     
     print("started saving calculations")
-    for slice_idx in range(num_slices):
+    #for slice_idx in range(num_slices):
 
-        mask_slice = kspace_mask[0, slice_idx, 0]
-        kspace_sum_masked_slice = kspace_sum_masked[slice_idx]
-        np.save(f"{root_path}/{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
-        np.save(f"{root_path}/{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
+        #mask_slice = kspace_mask[0, slice_idx, 0]
+        #kspace_sum_masked_slice = kspace_sum_masked[slice_idx]
+        #np.save(f"{root_path}/{split_name}_mask_numpy/{file_id}.{slice_idx}.npy", mask_slice)
+        #np.save(f"{root_path}/{split_name}_masked_sum_reconstruction_numpy/{file_id}.{slice_idx}.npy", kspace_sum_masked_slice)
 
-        matplotlib.image.imsave(f"{root_path}/{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
-        matplotlib.image.imsave(f"{root_path}/{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
+        #matplotlib.image.imsave(f"{root_path}/{split_name}_mask_png/{file_id}.{slice_idx}.png", mask_slice, cmap="gray")
+        #matplotlib.image.imsave(f"{root_path}/{split_name}_masked_sum_reconstruction_png/{file_id}.{slice_idx}.png", kspace_sum_masked_slice, cmap="gray")
 
     file.close()
     del kspace
